@@ -17,7 +17,7 @@ import javax.persistence.criteria.Root;
 
 /**
  *
- * @author yojha
+ * @author angel
  */
 public class ClienteJpaController implements Serializable {
 
