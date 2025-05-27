@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gestión de Clientes</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h2>Clientes</h2>
+      <button class="btn btn-success mb-3" onclick="abrirModalCrear()">
+        Nuevo Cliente
+      </button>
+      <table id="tablaClientes" class="display">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>DNI</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>Nombre</th>
+            <th>Fec. Nac.</th>
+            <th>Login</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyClientes"></tbody>
+      </table>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalCliente" tabindex="-1">
+      <div class="modal-dialog">
+        <form id="formCliente" class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Cliente</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="accion" />
+            <input type="hidden" id="codiClie" />
+            <input
+              class="form-control mb-2"
+              id="ndniClie"
+              placeholder="DNI"
+              required
+            />
+            <input
+              class="form-control mb-2"
+              id="appaClie"
+              placeholder="Apellido Paterno"
+              required
+            />
+            <input
+              class="form-control mb-2"
+              id="apmaClie"
+              placeholder="Apellido Materno"
+              required
+            />
+            <input
+              class="form-control mb-2"
+              id="nombClie"
+              placeholder="Nombre"
+              required
+            />
+            <input
+              class="form-control mb-2"
+              type="date"
+              id="fechNaciClie"
+              required
+            />
+            <input
+              class="form-control mb-2"
+              id="logiClie"
+              placeholder="Login"
+              required
+            />
+            <input
+              class="form-control mb-2"
+              id="passClie"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+      let modalCliente = new bootstrap.Modal(
+        document.getElementById("modalCliente")
+      );
+
+      document.addEventListener("DOMContentLoaded", () => {
+        cargarClientes();
+
+        document
+          .getElementById("formCliente")
+          .addEventListener("submit", (e) => {
+            e.preventDefault();
+            guardarCliente();
+          });
+      });
+
+      function cargarClientes() {
+  fetch('ClienteServlet')
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.getElementById('tbodyClientes');
+      tbody.innerHTML = '';
+      data.forEach(c => {
+        const fila = `
+          <tr>
+            <td>${c.codiClie}</td>
+            <td>${c.ndniClie}</td>
+            <td>${c.appaClie}</td>
+            <td>${c.apmaClie}</td>
+            <td>${c.nombClie}</td>
+            <td>${c.fechNaciClie}</td>
+            <td>${c.logiClie}</td>
+            <td>
+              <button class="btn btn-warning btn-sm" onclick='abrirModalEditar(${JSON.stringify(c)})'>Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="eliminarCliente(${c.codiClie})">Eliminar</button>
+            </td>
+          </tr>`;
+        tbody.insertAdjacentHTML('beforeend', fila);
+      });
+      $('#tablaClientes').DataTable();
+    });
+}
+
+
+      function abrirModalCrear() {
+        document.getElementById("formCliente").reset();
+        document.getElementById("accion").value = "crear";
+        modalCliente.show();
+      }
+
+      function abrirModalEditar(cliente) {
+  document.getElementById('codiClie').value = cliente.codiClie;
+  document.getElementById('ndniClie').value = cliente.ndniClie;
+  document.getElementById('appaClie').value = cliente.appaClie;
+  document.getElementById('apmaClie').value = cliente.apmaClie;
+  document.getElementById('nombClie').value = cliente.nombClie;
+  document.getElementById('fechNaciClie').value = cliente.fechNaciClie.slice(0,10);
+  document.getElementById('logiClie').value = cliente.logiClie;
+  document.getElementById('passClie').value = cliente.passClie;
+  document.getElementById('accion').value = 'editar';
+  modalCliente.show();
+}
+
+
+      function guardarCliente() {
+        const formData = new URLSearchParams();
+        formData.append("accion", document.getElementById("accion").value);
+        formData.append("codiClie", document.getElementById("codiClie").value);
+        formData.append("ndniClie", document.getElementById("ndniClie").value);
+        formData.append("appaClie", document.getElementById("appaClie").value);
+        formData.append("apmaClie", document.getElementById("apmaClie").value);
+        formData.append("nombClie", document.getElementById("nombClie").value);
+        formData.append(
+          "fechNaciClie",
+          document.getElementById("fechNaciClie").value
+        );
+        formData.append("logiClie", document.getElementById("logiClie").value);
+        formData.append("passClie", document.getElementById("passClie").value);
+
+        fetch("ClienteServlet", {
+          method: "POST",
+          body: formData,
+        }).then(() => {
+          modalCliente.hide();
+          $("#tablaClientes").DataTable().destroy();
+          cargarClientes();
+        });
+      }
+
+      function eliminarCliente(id) {
+        if (!confirm("¿Seguro de eliminar este cliente?")) return;
+        const formData = new URLSearchParams();
+        formData.append("accion", "eliminar");
+        formData.append("codiClie", id);
+
+        fetch("ClienteServlet", {
+          method: "POST",
+          body: formData,
+        }).then(() => {
+          $("#tablaClientes").DataTable().destroy();
+          cargarClientes();
+        });
+      }
+    </script>
+  </body>
+</html>
