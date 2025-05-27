@@ -67,7 +67,7 @@ public class ClienteJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws NonexistentEntityException {///creacion del destroy
         EntityManager em = null;
         try {
             em = getEntityManager();
