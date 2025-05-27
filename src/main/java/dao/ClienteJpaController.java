@@ -121,7 +121,7 @@ public class ClienteJpaController implements Serializable {
         }
     }
 
-    public int getClienteCount() {
+    public int getClienteCount() {//correcion del get
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
