@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/ClienteServlet")
 public class ClienteServlet extends HttpServlet {
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("miUnidadDePersistencia");
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_Fact_war_1.0-SNAPSHOTPU");
     ClienteJpaController dao = new ClienteJpaController(emf);
     Gson gson = new Gson();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
